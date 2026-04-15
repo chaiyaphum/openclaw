@@ -6,6 +6,8 @@ Docs: https://docs.openclaw.ai
 
 ### Changes
 
+- LINE/Drive archive: add an opt-in `channels.line.driveArchive` mode that uploads images and files shared in LINE groups to a per-group folder on a Google Shared Drive and replies with the link, using a service account credential.
+
 ### Fixes
 
 ## 2026.4.15-beta.1

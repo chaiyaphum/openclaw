@@ -11,6 +11,15 @@ export interface LineThreadBindingsConfig {
   spawnAcpSessions?: boolean;
 }
 
+export interface LineDriveArchiveConfig {
+  enabled?: boolean;
+  serviceAccountJsonFile?: string;
+  serviceAccountJson?: string;
+  rootFolderId?: string;
+  replyOnSuccess?: boolean;
+  replyOnFailure?: boolean;
+}
+
 interface LineAccountBaseConfig {
   enabled?: boolean;
   channelAccessToken?: string;
@@ -26,6 +35,7 @@ interface LineAccountBaseConfig {
   mediaMaxMb?: number;
   webhookPath?: string;
   threadBindings?: LineThreadBindingsConfig;
+  driveArchive?: LineDriveArchiveConfig;
   groups?: Record<string, LineGroupConfig>;
 }
 

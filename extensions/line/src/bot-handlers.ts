@@ -18,6 +18,7 @@ import {
   upsertChannelPairingRequest,
 } from "openclaw/plugin-sdk/conversation-runtime";
 import { evaluateMatchedGroupAccessForPolicy } from "openclaw/plugin-sdk/group-access";
+import { fireAndForgetHook } from "openclaw/plugin-sdk/hook-runtime";
 import { createClaimableDedupe, type ClaimableDedupe } from "openclaw/plugin-sdk/persistent-dedupe";
 import {
   DEFAULT_GROUP_HISTORY_LIMIT,
@@ -42,6 +43,7 @@ import {
   type LineInboundContext,
 } from "./bot-message-context.js";
 import { downloadLineMedia } from "./download.js";
+import { archiveLineMediaToDrive } from "./drive-archive-dispatch.js";
 import { resolveLineGroupConfigEntry } from "./group-keys.js";
 import { pushMessageLine, replyMessageLine } from "./send.js";
 import type { LineGroupConfig, ResolvedLineAccount } from "./types.js";
@@ -429,6 +431,34 @@ async function handleMessageEvent(event: MessageEvent, context: LineHandlerConte
   }
 
   const { isGroup, groupId, roomId } = getLineSourceInfo(event.source);
+
+  if (
+    isGroup &&
+    groupId &&
+    account.config.driveArchive?.enabled &&
+    (message.type === "image" || message.type === "file")
+  ) {
+    const filename =
+      message.type === "file"
+        ? ((message as MessageEvent["message"] & { fileName?: string }).fileName ??
+          `file_${message.id}`)
+        : `image_${message.id}.jpg`;
+    fireAndForgetHook(
+      archiveLineMediaToDrive({
+        account,
+        runtime,
+        groupId,
+        mediaMaxBytes,
+        target: {
+          messageType: message.type,
+          messageId: message.id,
+          filename,
+        },
+      }),
+      "line: drive-archive",
+    );
+  }
+
   if (isGroup) {
     const groupConfig = resolveLineGroupConfig({ config: account.config, groupId, roomId });
     const requireMention = groupConfig?.requireMention !== false;

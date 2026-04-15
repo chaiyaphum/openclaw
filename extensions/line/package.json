@@ -5,7 +5,8 @@
   "description": "OpenClaw LINE channel plugin",
   "type": "module",
   "dependencies": {
-    "@line/bot-sdk": "^11.0.0"
+    "@line/bot-sdk": "^11.0.0",
+    "google-auth-library": "10.6.2"
   },
   "devDependencies": {
     "@openclaw/plugin-sdk": "workspace:*",

@@ -207,6 +207,44 @@ The LINE plugin supports sending images, videos, and audio files through the age
 
 Generic media sends fall back to the existing image-only route when a LINE-specific path is not available.
 
+## Drive archive
+
+The LINE plugin can automatically upload images and files that members share in any group the bot has joined into a per-group folder on Google Drive. The bot replies with a link to the uploaded file. This feature requires a Google Workspace Shared Drive because service accounts cannot hold files in a personal My Drive.
+
+### Prerequisites
+
+- A Google Cloud service account with a JSON key file.
+- A Google Workspace Shared Drive. Share the target folder with the service account email.
+- The Shared Drive folder ID (visible in the Drive URL).
+
+### Configure
+
+```jsonc
+{
+  "channels": {
+    "line": {
+      "driveArchive": {
+        "enabled": true,
+        "serviceAccountJsonFile": "~/.openclaw/credentials/line-drive-sa.json",
+        "rootFolderId": "0ABCDEFGhIJKLMNopqrs",
+        "replyOnSuccess": true,
+        "replyOnFailure": true,
+      },
+    },
+  },
+}
+```
+
+Keys:
+
+- `enabled` — turn the archive on. Defaults to off.
+- `serviceAccountJsonFile` — path to the service account JSON key. Use `serviceAccountJson` instead to pass the JSON string inline (for example via a secret store).
+- `rootFolderId` — ID of the Shared Drive folder that holds the per-group subfolders.
+- `replyOnSuccess` — post a LINE reply with the Drive link. Defaults to `true`.
+- `replyOnFailure` — post a LINE reply describing the error. Defaults to `true`.
+
+The archive only fires for `image` and `file` messages posted in group or room sources. Text, sticker, video, and audio messages are ignored. The existing `mediaMaxMb` cap still applies.
+
 ## Troubleshooting
 
 - **Webhook verification fails:** ensure the webhook URL is HTTPS and the
@@ -215,6 +253,11 @@ Generic media sends fall back to the existing image-only route when a LINE-speci
   and that the gateway is reachable from LINE.
 - **Media download errors:** raise `channels.line.mediaMaxMb` if media exceeds the
   default limit.
+- **Drive archive uploads fail with `storageQuotaExceeded`:** the target folder must
+  live inside a Shared Drive. Service accounts cannot own files under a personal
+  My Drive.
+- **Drive archive uploads fail with `403`:** share the Shared Drive folder with the
+  service account email.
 
 ## Related
 

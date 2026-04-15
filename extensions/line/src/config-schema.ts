@@ -13,6 +13,17 @@ const ThreadBindingsSchema = z
   })
   .strict();
 
+const DriveArchiveConfigSchema = z
+  .object({
+    enabled: z.boolean().optional(),
+    serviceAccountJsonFile: z.string().optional(),
+    serviceAccountJson: z.string().optional(),
+    rootFolderId: z.string().optional(),
+    replyOnSuccess: z.boolean().optional(),
+    replyOnFailure: z.boolean().optional(),
+  })
+  .strict();
+
 const LineCommonConfigSchema = z.object({
   enabled: z.boolean().optional(),
   channelAccessToken: z.string().optional(),
@@ -28,6 +39,7 @@ const LineCommonConfigSchema = z.object({
   mediaMaxMb: z.number().optional(),
   webhookPath: z.string().optional(),
   threadBindings: ThreadBindingsSchema.optional(),
+  driveArchive: DriveArchiveConfigSchema.optional(),
 });
 
 const LineGroupConfigSchema = z
