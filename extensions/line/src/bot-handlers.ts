@@ -74,6 +74,65 @@ function isDownloadableLineMessageType(
   return LINE_DOWNLOADABLE_MESSAGE_TYPES.has(messageType);
 }
 
+const DRIVE_ARCHIVE_ANALYSIS_KEYWORDS: readonly string[] = [
+  "วิเคราะห์",
+  "ช่วยดู",
+  "ช่วยอ่าน",
+  "อ่านให้",
+  "อ่านไฟล์",
+  "ดูให้",
+  "ดูไฟล์",
+  "ช่วยตรวจ",
+  "ตรวจให้",
+  "ตรวจสอบไฟล์",
+  "สรุปให้",
+  "สรุปไฟล์",
+  "สรุปหน่อย",
+  "แปลให้",
+  "แปลไฟล์",
+  "analyze",
+  "analyse",
+  "check this",
+  "check the file",
+  "look at",
+  "read this",
+  "read the file",
+  "review",
+  "summarize",
+  "summarise",
+  "summary",
+  "translate",
+];
+
+const DRIVE_ARCHIVE_ANALYSIS_HISTORY_WINDOW_MS = 120 * 1000;
+const DRIVE_ARCHIVE_ANALYSIS_HISTORY_LOOKBACK = 10;
+
+function hasRecentDriveArchiveAnalysisRequest(
+  history: HistoryEntry[] | undefined,
+  nowSeconds: number | undefined,
+): boolean {
+  if (!history || history.length === 0) {
+    return false;
+  }
+  const nowMs = typeof nowSeconds === "number" ? nowSeconds : Date.now();
+  const cutoffMs = nowMs - DRIVE_ARCHIVE_ANALYSIS_HISTORY_WINDOW_MS;
+  const start = Math.max(0, history.length - DRIVE_ARCHIVE_ANALYSIS_HISTORY_LOOKBACK);
+  for (let i = history.length - 1; i >= start; i -= 1) {
+    const entry = history[i];
+    if (!entry?.body) {
+      continue;
+    }
+    if (typeof entry.timestamp === "number" && entry.timestamp < cutoffMs) {
+      continue;
+    }
+    const body = entry.body.toLowerCase();
+    if (DRIVE_ARCHIVE_ANALYSIS_KEYWORDS.some((keyword) => body.includes(keyword.toLowerCase()))) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export interface LineHandlerContext {
   cfg: OpenClawConfig;
   account: ResolvedLineAccount;
@@ -456,6 +515,15 @@ async function handleMessageEvent(event: MessageEvent, context: LineHandlerConte
         },
       }),
       "line: drive-archive",
+    );
+    const historyKey = groupId ?? roomId;
+    const history = historyKey ? context.groupHistories?.get(historyKey) : undefined;
+    if (!hasRecentDriveArchiveAnalysisRequest(history, event.timestamp)) {
+      logVerbose(`line: drive-archive owns ${message.type} ${message.id}; skipping agent reply`);
+      return;
+    }
+    logVerbose(
+      `line: drive-archive archived ${message.type} ${message.id}; agent will also reply (analysis keyword match)`,
     );
   }
 
