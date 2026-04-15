@@ -36,6 +36,7 @@ const LineCommonConfigSchema = z.object({
   dmPolicy: DmPolicySchema.optional().default("pairing"),
   groupPolicy: GroupPolicySchema.optional().default("allowlist"),
   responsePrefix: z.string().optional(),
+  systemPrompt: z.string().optional(),
   mediaMaxMb: z.number().optional(),
   webhookPath: z.string().optional(),
   threadBindings: ThreadBindingsSchema.optional(),

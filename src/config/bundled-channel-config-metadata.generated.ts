@@ -6355,6 +6355,9 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
         responsePrefix: {
           type: "string",
         },
+        systemPrompt: {
+          type: "string",
+        },
         mediaMaxMb: {
           type: "number",
         },
@@ -6377,6 +6380,30 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
               type: "boolean",
             },
             spawnAcpSessions: {
+              type: "boolean",
+            },
+          },
+          additionalProperties: false,
+        },
+        driveArchive: {
+          type: "object",
+          properties: {
+            enabled: {
+              type: "boolean",
+            },
+            serviceAccountJsonFile: {
+              type: "string",
+            },
+            serviceAccountJson: {
+              type: "string",
+            },
+            rootFolderId: {
+              type: "string",
+            },
+            replyOnSuccess: {
+              type: "boolean",
+            },
+            replyOnFailure: {
               type: "boolean",
             },
           },
@@ -6447,6 +6474,9 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
               responsePrefix: {
                 type: "string",
               },
+              systemPrompt: {
+                type: "string",
+              },
               mediaMaxMb: {
                 type: "number",
               },
@@ -6469,6 +6499,30 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
                     type: "boolean",
                   },
                   spawnAcpSessions: {
+                    type: "boolean",
+                  },
+                },
+                additionalProperties: false,
+              },
+              driveArchive: {
+                type: "object",
+                properties: {
+                  enabled: {
+                    type: "boolean",
+                  },
+                  serviceAccountJsonFile: {
+                    type: "string",
+                  },
+                  serviceAccountJson: {
+                    type: "string",
+                  },
+                  rootFolderId: {
+                    type: "string",
+                  },
+                  replyOnSuccess: {
+                    type: "boolean",
+                  },
+                  replyOnFailure: {
                     type: "boolean",
                   },
                 },
