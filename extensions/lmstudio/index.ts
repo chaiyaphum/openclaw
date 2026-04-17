@@ -99,7 +99,12 @@ export default definePluginEntry({
       shouldDeferSyntheticProfileAuth: ({ resolvedApiKey }) =>
         resolvedApiKey?.trim() === LMSTUDIO_LOCAL_API_KEY_PLACEHOLDER ||
         resolvedApiKey?.trim() === CUSTOM_LOCAL_AUTH_MARKER,
-      normalizeConfig: ({ providerConfig }) => normalizeLmstudioProviderConfig(providerConfig),
+      normalizeConfig: ({ provider, providerConfig }) => {
+        if (provider !== PROVIDER_ID) {
+          return undefined;
+        }
+        return normalizeLmstudioProviderConfig(providerConfig);
+      },
       prepareDynamicModel: async (ctx) => {
         const providerSetup = await loadProviderSetup();
         cachedDynamicModels.set(

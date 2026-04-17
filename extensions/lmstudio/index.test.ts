@@ -48,6 +48,21 @@ describe("lmstudio plugin", () => {
     });
   });
 
+  it("does not rewrite baseUrls for non-lmstudio providers", () => {
+    const provider = registerProvider();
+
+    expect(
+      provider?.normalizeConfig?.({
+        provider: "openrouter",
+        providerConfig: {
+          api: "openai-completions",
+          baseUrl: "https://openrouter.ai/api/v1",
+          models: [],
+        },
+      }),
+    ).toBeUndefined();
+  });
+
   it("synthesizes placeholder auth for configured lmstudio models without API key auth", () => {
     const provider = registerProvider();
 
